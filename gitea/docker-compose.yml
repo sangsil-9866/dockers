@@ -1,0 +1,18 @@
+services:
+  server:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: no
+    volumes:
+      - ../../datas/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    # [핵심] 이 설정이 "호스트 컴퓨터"를 가리키는 별명을 만들어줍니다.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
