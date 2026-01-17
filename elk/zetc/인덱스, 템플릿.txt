@@ -1,0 +1,138 @@
+PUT _index_template/email-search-index-template
+{
+  "index_patterns": ["email-search-index*"],
+  "template": {
+    "settings": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "char_filter": ["html_strip"],
+            "tokenizer": "nori_tokenizer",
+            "filter": [
+              "lowercase",
+              "nori_part_of_speech"
+            ]
+          }
+        }
+      }
+    },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+
+        "dsEmail": {
+          "type": "object",
+          "properties": {
+			/*
+            "line_group": {
+              "type": "text",
+              "analyzer": "whitespace"
+            },
+			*/
+
+            "em_subject": {
+              "type": "text",
+              "analyzer": "standard"
+            },
+
+            "contents": {
+              "type": "object",
+              "properties": {
+
+                "body_content_summary": {
+                  "type": "text",
+                  "analyzer": "standard"
+                },
+
+                "body_content": {
+                  "type": "text",
+                  "analyzer": "standard"
+                },
+
+                "body_content_translation": {
+                  "type": "text",
+                  "analyzer": "korean_analyzer"
+                },
+
+                "body_content_translation_summary": {
+                  "type": "text",
+                  "analyzer": "korean_analyzer"
+                },
+
+                "em_subject_translation": {
+                  "type": "text",
+                  "analyzer": "korean_analyzer"
+                }
+              }
+            }
+
+          }
+        },
+
+        "dsAttachments": {
+          "type": "object",
+          "properties": {
+
+            "body_content_summary": {
+              "type": "text",
+              "analyzer": "standard"
+            },
+
+            "body_content": {
+              "type": "text",
+              "analyzer": "standard"
+            },
+
+            "body_content_translation": {
+              "type": "text",
+              "analyzer": "korean_analyzer"
+            },
+
+            "body_content_translation_summary": {
+              "type": "text",
+              "analyzer": "korean_analyzer"
+            },
+
+            "em_subject_translation": {
+              "type": "text",
+              "analyzer": "korean_analyzer"
+            },
+
+            "contents": {
+              "type": "object",
+              "properties": {
+
+                "article": {
+                  "type": "text",
+                  "analyzer": "standard"
+                },
+
+                "article_summary": {
+                  "type": "text",
+                  "analyzer": "standard"
+                },
+
+                "article_translation": {
+                  "type": "text",
+                  "analyzer": "korean_analyzer"
+                },
+
+                "article_translation_summary": {
+                  "type": "text",
+                  "analyzer": "korean_analyzer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+5. index 생성 (키바나 Management->dev Tools 메뉴 이용, 템플릿 생성 후 인덱스를 만들어야 템플릿이 반영됨)
+PUT /email-search-index
+
+
+
