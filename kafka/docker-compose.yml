@@ -1,25 +1,36 @@
 services:
   kafka:
-    image: confluentinc/cp-kafka:7.6.0  # Kafka 4.0.0은 Confluent Platform 7.6.0에 포함
+    # Apache 공식 이미지 사용
+    image: apache/kafka:4.1.1
     container_name: kafka
     hostname: kafka
     ports:
-      - "9093:9093"  # 외부에서 접속용
+      - "9093:9093" # 외부 접속용
     environment:
+      # KRaft 설정 (공식 이미지는 KAFKA_CFG_ 접두사 없이 사용합니다)
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9094
-      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://0.0.0.0:9093,CONTROLLER://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # 리스너 설정
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9094,EXTERNAL://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+
+      # 개발 환경 최적화
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # 중요: 공식 이미지도 Cluster ID가 필요할 수 있습니다.
+      # (자동 생성되지 않을 경우를 대비해 환경변수나 초기화 명령이 필요할 수 있으나,
+      # 최신 공식 이미지는 보통 자동 처리하거나 아래 변수를 지원합니다.)
+      KAFKA_CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
     volumes:
-      - ../../datas/kafka-data:/var/lib/kafka/data
-    restart: unless-stopped
+      - ../../datas/kafka_data:/var/lib/kafka/data
+    restart: no
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -27,11 +38,8 @@ services:
     ports:
       - "8090:8080"
     environment:
-      - KAFKA_CLUSTERS_0_NAME=kraft-cluster
+      - KAFKA_CLUSTERS_0_NAME=apache-official-4
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     depends_on:
       - kafka
-    restart: unless-stopped
-
-volumes:
-  kafka-data:
+    restart: no
