@@ -1,0 +1,21 @@
+# config.yaml 도커 저장소에 생성
+log:
+  level: info
+
+runner:
+  file: .runner
+  envs:
+    A_TEST_ENV: "val"
+
+cache:
+  enabled: true
+  dir: ""
+
+container:
+  # 여기가 핵심입니다! Job 컨테이너를 Gitea 네트워크에 붙입니다.
+  network: "gitea_default"
+
+  # Docker 소켓 사용을 위해 필요할 수 있습니다.
+  valid_volumes:
+    - "/var/run/docker.sock"
+    - "**"

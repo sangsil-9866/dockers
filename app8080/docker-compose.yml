@@ -1,9 +1,0 @@
-services:
-  myapp:
-    build: .
-    container_name: silServer
-    environment:
-      - SPRING_PROFILES_ACTIVE=local
-    ports:
-      - "8080:8080"
-    restart: no

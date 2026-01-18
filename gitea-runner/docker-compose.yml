@@ -1,0 +1,27 @@
+services:
+  gitea-runner:
+    image: gitea/act_runner:latest
+    container_name: gitea-runner
+    restart: always
+    volumes:
+      - ../../datas/gitea-runner-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # ✅ 핵심 1: IP 대신 Gitea의 "컨테이너 이름"을 적습니다.
+      - GITEA_INSTANCE_URL=http://gitea:3000
+
+      - GITEA_RUNNER_REGISTRATION_TOKEN=xLbEAyil5hxlAQT5WCEdOYEfUbdMSHMh9q5WYCuW
+      - GITEA_RUNNER_NAME=local-runner
+      - GITEA_RUNNER_LABELS=ubuntu-latest:docker://catthehacker/ubuntu:act-latest
+
+      # ✅ 다시 추가합니다. 이제 파일이 존재하므로 에러가 안 납니다.
+      - CONFIG_FILE=/data/config.yaml
+
+    # ✅ 핵심 2: Gitea와 같은 네트워크를 쓰겠다고 선언합니다.
+    networks:
+      - gitea_default
+
+# ✅ 핵심 3: 이 네트워크는 외부(Gitea)에서 이미 만들어진 것이라고 알려줍니다.
+networks:
+  gitea_default:
+    external: true
