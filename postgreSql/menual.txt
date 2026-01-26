@@ -1,0 +1,65 @@
+-- 0. 관리자로 접속
+docker exec -it postgres psql -U dbuser -d dbname
+
+-- 1. gitea라는 유저 생성 (비밀번호는 원하는대로, 여기선 gitea1234)
+CREATE USER gitea WITH PASSWORD 'gitea1234';
+
+-- 2. gitea라는 이름의 데이터베이스 생성하고 주인은 gitea로 설정
+CREATE DATABASE gitea OWNER gitea;
+-- 3. 나가기
+\q
+
+
+-- 스키마 이용하는 방법
+-- 1. 개발용 통합 계정 생성 (비밀번호는 변경해서 사용하세요)
+CREATE USER dbuser WITH PASSWORD 'dbpassword';
+
+-- 2. 통합 데이터베이스 생성 (소유자를 dbuser로 지정)
+CREATE DATABASE dbname OWNER dbuser;
+
+-- ---------------------------------------------------------
+-- 중요: 여기서부터는 방금 만든 'dbname'에 접속해서 실행해야 합니다.
+-- (DBeaver 등에서 연결을 dbname로 변경 후 실행)
+-- ---------------------------------------------------------
+
+-- 3. A 프로젝트용 스키마 생성 (소유권 부여)
+CREATE SCHEMA project_a AUTHORIZATION dbuser;
+
+-- 4. B 프로젝트용 스키마 생성 (소유권 부여)
+CREATE SCHEMA project_b AUTHORIZATION dbuser;
+
+
+-- 6. dbuser에게 모든 권한 확실하게 부여 (혹시 모를 권한 문제 방지)
+GRANT ALL ON SCHEMA project_a TO dbuser;
+GRANT ALL ON SCHEMA project_b TO dbuser;
+
+# Project A 설정 예시
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dbname?currentSchema=project_a
+    username: dbuser
+    password: dbpassword
+
+--------------------------------------------------------------------
+-- public 스키마 초기화
+--------------------------------------------------------------------
+-- 1. public 스키마와 그 안의 모든 내용물(테이블 등)을 강제로 삭제
+DROP SCHEMA public CASCADE;
+
+-- 2. 깨끗한 public 스키마 다시 생성
+CREATE SCHEMA public;
+
+-- 3. 기본 권한 복구 (PostgreSQL 기본 설정)
+GRANT ALL ON SCHEMA public TO postgres;
+-- ALTER SCHEMA public OWNER TO CURRENT_USER;
+GRANT ALL ON SCHEMA public TO public;
+
+
+--------------------------------------------------------------------
+-- Database 삭제
+--------------------------------------------------------------------
+SELECT datname
+FROM pg_database
+WHERE datistemplate = false;
+
+drop database imsidb WITH (FORCE);
