@@ -17,18 +17,18 @@ services:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/ssl/localhost_private.key
-      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/ssl/localhost.crt
-      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/ssl/localhost.crt
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/ssl/sangsil.com.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/ssl/sangsil.com.crt
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/ssl/sangsil.com.crt
       - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/ssl/localhost_private.key
-      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/ssl/localhost.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/ssl/sangsil.com.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/ssl/sangsil.com.crt
       - xpack.security.transport.ssl.verification_mode=certificate
     volumes:
       # (선택) ES 데이터도 절대경로로 하고 싶으면 여기를 수정하세요. 지금은 상대경로 유지.
       - ../../datas/es_data:/usr/share/elasticsearch/data
-      - ./ssl/localhost.crt:/usr/share/elasticsearch/config/ssl/localhost.crt:ro
-      - ./ssl/localhost_private.key:/usr/share/elasticsearch/config/ssl/localhost_private.key:ro
+      - ./ssl/sangsil.com.crt:/usr/share/elasticsearch/config/ssl/sangsil.com.crt:ro
+      - ./ssl/sangsil.com.key:/usr/share/elasticsearch/config/ssl/sangsil.com.key:ro
     ports:
       - "9200:9200"
     networks:
@@ -47,12 +47,12 @@ services:
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=elmalee201*
-      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/kibana/config/ssl/localhost.crt
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/kibana/config/ssl/sangsil.com.crt
       # 인증서 도메인 불일치 허용
       - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
     volumes:
       - ../../datas/kibana_data:/usr/share/kibana/data
-      - ./ssl/localhost.crt:/usr/share/kibana/config/ssl/localhost.crt:ro
+      - ./ssl/sangsil.com.crt:/usr/share/kibana/config/ssl/sangsil.com.crt:ro
     ports:
       - "5601:5601"
     networks:
@@ -68,7 +68,7 @@ services:
       - elasticsearch
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-      - ./ssl/localhost.crt:/usr/share/logstash/config/ssl/localhost.crt:ro
+      - ./ssl/sangsil.com.crt:/usr/share/logstash/config/ssl/sangsil.com.crt:ro
 
       # [✅ 여기를 수정했습니다]
       # 내 맥북의 절대 경로 : 컨테이너 내부 경로 (고정)

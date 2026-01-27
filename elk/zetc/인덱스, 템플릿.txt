@@ -1,6 +1,6 @@
-PUT _index_template/email-search-index-template
+PUT _index_template/sil-index-template
 {
-  "index_patterns": ["email-search-index*"],
+  "index_patterns": ["sil-index*"],
   "template": {
     "settings": {
       "analysis": {
@@ -132,7 +132,7 @@ PUT _index_template/email-search-index-template
 }
 
 5. index 생성 (키바나 Management->dev Tools 메뉴 이용, 템플릿 생성 후 인덱스를 만들어야 템플릿이 반영됨)
-PUT /email-search-index
+PUT /sil-index
 
 
 
