@@ -4,10 +4,14 @@ services:
     container_name: postgres
     restart: no
     environment:
-      POSTGRES_DB: dbname
-      POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD: dbpassword
+      # 기본 관리자(postgres) 설정 (보통 이렇게 비번을 줍니다)
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password # postgres 계정의 비번 (단순하게 설정)
     ports:
       - "5432:5432"
     volumes:
+      # 데이터 저장소 (기존 경로 유지)
       - ../../datas/postgres-data:/var/lib/postgresql/data
+      # 👇 [핵심] 같은 경로의 init.sql을 컨테이너 내부로 연결
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
