@@ -2,7 +2,7 @@ services:
   gitea-runner:
     image: gitea/act_runner:latest
     container_name: gitea-runner
-    restart: always
+    restart: no
     volumes:
       - ../../datas/gitea-runner-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
